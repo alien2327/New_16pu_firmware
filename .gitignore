@@ -1,0 +1,25 @@
+*.ip_user_files/
+*.tmp/
+*.runs/
+*.cache/
+*.hw/
+*.sim/
+
+**/*.srcs/*/bd/mref/
+**/*.srcs/*/bd/*/ipshared/
+**/*.srcs/*/bd/*/hw_handoff/
+**/*.srcs/*/bd/*/ip/*/sim/
+**/*.srcs/*/bd/*/ip/*/synth/
+**/*.srcs/*/bd/*/ip/*/sysc/
+**/*.srcs/*/bd/*/ip/*/src/
+**/*.srcs/*/bd/*/sim/
+**/*.srcs/*/bd/*/synth/
+
+# ip_repoはIPコアを置いてるディレクトリ名
+ip_repo/*/doc/
+ip_repo/*/src/*/doc/
+ip_repo/*/src/*/simulation/
+ip_repo/*/src/*/hdl/
+ip_repo/*/src/*/sim/
+ip_repo/*/src/*/synth/
+ip_repo/*/ipshared/
