@@ -36,7 +36,7 @@ Windows 11でVivadoを使っていると、たまに原因不明のエラーで�
 
 ### 繋がっていない状態
 ```
-PS C:\Users\alien> usbipd wsl list
+PS C:\Users\-----> usbipd wsl list
 BUSID  VID:PID    DEVICE                                                        STATE
 2-2    03fd:0008  Xilinx USB Cable                                             Not attached
 2-3    0b05:19b6  USB 入力デバイス                                              Not attached
@@ -47,7 +47,7 @@ BUSID  VID:PID    DEVICE                                                        
 
 ### 繋がっている状態
 ```
-PS C:\Users\alien> usbipd wsl list
+PS C:\Users\-----> usbipd wsl list
 BUSID  VID:PID    DEVICE                                                        STATE
 2-2    03fd:0008  Xilinx USB Cable                                             Attached - Ubuntu
 2-3    0b05:19b6  USB 入力デバイス                                              Not attached
