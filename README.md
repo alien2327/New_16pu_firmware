@@ -1,5 +1,11 @@
 # New_16pu_firmware
 
+# Memo for RF Commutication
+
+# Memo for SiTCP
+
+# Memo for HLS (高位合成)
+
 # Memo for Vivado with WSL2 (Ubuntu 20.04)
 
 Windows 11でVivadoを使っていると、たまに原因不明のエラーで、正常にコンパイルが出来なくなる場合がある。おそらく、正確でもないし正解かどうかも知らないが、Windows側で最新のCPUに最適化されたスレッド管理を導入したらしいが、それとVivado側のコンパイルプロセスと相性が合わないような気がする。とは言っても、ほとんどのサンプルコードや簡単な自作コードはすべて正常に動いてくれる。しかし、たまに詰まるとこがあるのは確かなので、ここを自力で何とかするしかない。
