@@ -42,7 +42,7 @@ BUSID  VID:PID    DEVICE                                                        
 2-3    0b05:19b6  USB 入力デバイス                                              Not attached
 2-5    05d5:624c  USB 入力デバイス                                              Not attached
 2-6    046d:c53f  USB 入力デバイス                                              Not attached
-2-10   8087:0033  インテル(R) ワイヤレス Bluetooth(R)                            Not attached
+2-10   8087:0033  インテル(R) ワイヤレス Bluetooth(R)                           Not attached
 ```
 
 ### 繋がっている状態
@@ -53,5 +53,5 @@ BUSID  VID:PID    DEVICE                                                        
 2-3    0b05:19b6  USB 入力デバイス                                              Not attached
 2-5    05d5:624c  USB 入力デバイス                                              Not attached
 2-6    046d:c53f  USB 入力デバイス                                              Not attached
-2-10   8087:0033  インテル(R) ワイヤレス Bluetooth(R)                            Not attached
+2-10   8087:0033  インテル(R) ワイヤレス Bluetooth(R)                           Not attached
 ```
