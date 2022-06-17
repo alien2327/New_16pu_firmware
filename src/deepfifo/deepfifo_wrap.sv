@@ -39,95 +39,94 @@ module deepfifo_wrap #(
     input  logic  	        axi_rvalid,
     output logic  	        axi_rready
 );
-    logic [S-1:0]        fifo_pre_rd_en;
-    logic [S-1:0]        fifo_pre_empty;
-    logic [S-1:0][127:0] fifo_pre_dout;
-    logic [S-1:0][  7:0] fifo_pre_rd_count;
+    logic         fifo_pre_rd_en;
+    logic         fifo_pre_empty;
+    logic [511:0] fifo_pre_dout;
+    logic [  7:0] fifo_pre_rd_count;
 
-    logic [S-1:0]        fifo_post_wr_en;
-    logic [S-1:0]        fifo_post_full;
-    logic [S-1:0][127:0] fifo_post_din;
-    logic [S-1:0][  7:0] fifo_post_wr_count;
+    logic         fifo_post_wr_en;
+    logic         fifo_post_full;
+    logic [511:0] fifo_post_din;
+    logic [  7:0] fifo_post_wr_count;
 
-    generate
-        for (genvar i = 0; i < S; i = i + 1) begin
-            fifo_deepfifo_pre fifo_pre_inst (
-                .rst(sys_rst),
-                .wr_clk(data_clk[i]),
-                .rd_clk(axi_clk),
-                .din(data_in[i]),
-                .wr_en(),
-                .rd_en(),
-                .dout(fifo_pre_dout[i]),
-                .full(),
-                .rd_data_count(fifo_pre_rd_count[i]),
-                .empty(fifo_pre_empty[i])
-            );
+    logic data_clk_all;
+    assign data_clk_all = &data_clk;
 
-            deepfifo #(
-                .base_addr(0+'h07FF_FFFF*i),
-                .log2_word_width(7),
-                .log2_fifo_words(9),
-                .fifo_threshold(64)
-            ) deepfifo_inst (
-                .clk				    (axi_clk),
-                .reset				    (sys_rst), // Active high
+    fifo_deepfifo_pre fifo_pre_inst (
+        .rst(sys_rst),
+        .wr_clk(data_clk_all),
+        .rd_clk(axi_clk),
+        .din(data_in),
+        .wr_en(1'b1),
+        .rd_en(fifo_pre_rd_en),
+        .dout(fifo_pre_dout),
+        .full(),
+        .rd_data_count(fifo_pre_rd_count),
+        .empty(fifo_pre_empty)
+    );
 
-                .fifo_pre_rd_en			(fifo_pre_rd_en),
-                .fifo_pre_empty			(fifo_pre_empty),
-                .fifo_pre_dout			(fifo_pre_dout),
-                .fifo_pre_rd_count		(fifo_pre_rd_count),
+    deepfifo #(
+        .log2_ram_size_addr(30),
+        .log2_word_width(9),
+        .log2_fifo_words(9),
+        .fifo_threshold(256)
+    ) deepfifo_inst (
+        .clk				    (axi_clk),
+        .reset				    (sys_rst), // Active high
 
-                .fifo_post_wr_en        (fifo_post_wr_en),
-                .fifo_post_din			(fifo_post_din),
-                .fifo_post_full			(fifo_post_full),
-                .fifo_post_wr_count		(fifo_post_wr_count),
+        .fifo_pre_rd_en			(fifo_pre_rd_en),
+        .fifo_pre_empty			(fifo_pre_empty),
+        .fifo_pre_dout			(fifo_pre_dout),
+        .fifo_pre_rd_count		(fifo_pre_rd_count),
 
-                .axi_aresetn			(axi_aresetn),
+        .fifo_post_wr_en        (fifo_post_wr_en),
+        .fifo_post_din			(fifo_post_din),
+        .fifo_post_full			(fifo_post_full),
+        .fifo_post_wr_count		(fifo_post_wr_count),
 
-                .axi_awaddr			    (axi_awaddr),
-                .axi_awlen			    (axi_awlen),
-                .axi_awvalid			(axi_awvalid),
-                .axi_awready			(axi_awready),
-                .axi_awsize			    (axi_awsize),
-                .axi_awburst			(axi_awburst),
+        .axi_aresetn			(axi_aresetn),
 
-                .axi_wdata			    (axi_wdata),
-                .axi_wstrb			    (axi_wstrb),
-                .axi_wlast			    (axi_wlast),
-                .axi_wvalid			    (axi_wvalid),
+        .axi_awaddr			    (axi_awaddr),
+        .axi_awlen			    (axi_awlen),
+        .axi_awvalid			(axi_awvalid),
+        .axi_awready			(axi_awready),
+        .axi_awsize			    (axi_awsize),
+        .axi_awburst			(axi_awburst),
 
-                .axi_bvalid			    (axi_bvalid),
-                .axi_bready			    (axi_bready),
+        .axi_wdata			    (axi_wdata),
+        .axi_wstrb			    (axi_wstrb),
+        .axi_wlast			    (axi_wlast),
+        .axi_wvalid			    (axi_wvalid),
 
-                .axi_araddr			    (axi_araddr),
-                .axi_arlen			    (axi_arlen),
-                .axi_arvalid			(axi_arvalid),
-                .axi_arready			(axi_arready),
-                .axi_arsize			    (axi_arsize),
-                .axi_arburst			(axi_arburst),
+        .axi_bvalid			    (axi_bvalid),
+        .axi_bready			    (axi_bready),
 
-                .axi_wready			    (axi_wready),
-                .axi_rdata			    (axi_rdata),
-                .axi_rready			    (axi_rready),
-                .axi_rlast			    (axi_rlast),
-                .axi_rvalid			    (axi_rvalid)
-            );
+        .axi_araddr			    (axi_araddr),
+        .axi_arlen			    (axi_arlen),
+        .axi_arvalid			(axi_arvalid),
+        .axi_arready			(axi_arready),
+        .axi_arsize			    (axi_arsize),
+        .axi_arburst			(axi_arburst),
 
-            fifo_deepfifo_post fifo_post_inst (
-                .rst(sys_rst),
-                .wr_clk(axi_clk),
-                .rd_clk(clk),
-                .din(fifo_post_din[i]),
-                .wr_en(fifo_post_wr_en[i]),
-                .rd_en(),
-                .dout(data_pre_packet[16*(i+1)-1:16*i]),
-                .full(fifo_post_full[i]),
-                .wr_data_count(fifo_post_wr_count[i]),
-                .empty(fifo_pre_empty[i])
-            );
-        end
-    endgenerate
+        .axi_wready			    (axi_wready),
+        .axi_rdata			    (axi_rdata),
+        .axi_rready			    (axi_rready),
+        .axi_rlast			    (axi_rlast),
+        .axi_rvalid			    (axi_rvalid)
+    );
+
+    fifo_deepfifo_post fifo_post_inst (
+        .rst(sys_rst),
+        .wr_clk(axi_clk),
+        .rd_clk(clk),
+        .din(fifo_post_din),
+        .wr_en(fifo_post_wr_en),
+        .rd_en(1'b1),
+        .dout(data_pre_packet),
+        .full(fifo_post_full),
+        .wr_data_count(fifo_post_wr_count),
+        .empty()
+    );
 
 
 endmodule

@@ -4,8 +4,8 @@ module lcd_wrap(
     output logic [2:0] lcd_ctrl_3bits,
     output logic [3:0] lcd_data_4bits
 );
-    logic [127:0] line_1_buffer;
-    logic [127:0] line_2_buffer;
+    logic [127:0] line1;
+    logic [127:0] line2;
 
     lcd16x2_ctrl lcd_inst (
         .clk          (clk_50mhz),
@@ -14,8 +14,8 @@ module lcd_wrap(
         .lcd_rs       (lcd_ctrl_3bits[1]),
         .lcd_rw       (lcd_ctrl_3bits[2]),
         .lcd_db       (lcd_data_4bits),
-        .line1_buffer (line_1_buffer),
-        .line2_buffer (line_2_buffer)
+        .line1_buffer (line1),
+        .line2_buffer (line2)
     );
 
     always_latch begin : lcd_display

@@ -49,7 +49,7 @@ module daq_main #(
     inout  logic gmii_mdio_in,
 
     // connect EEPROM
-    input  logic i2c_sda,
+    inout  logic i2c_sda,
     output logic i2c_scl,
 
     // Onboard general purpose input/output (GPIO)
@@ -140,6 +140,7 @@ module daq_main #(
     assign trigger_out = trigger_in | trigger_cmd;
     assign trigger_is_sync = trigger_in & trigger_sync;
     assign trigger = trigger_is_sync | trigger_cmd;
+    assign led[0] = trigger;
 
     adc_capture_wrap adc_inst (
         // Reference input
@@ -155,7 +156,7 @@ module daq_main #(
         // Deserialized output
         .adc_data_out   (adc_data_out),
         .adc_data_clk   (adc_data_clk),
-        .adc_system_clk (adc_system_clk),
+        .adc_system_clk (adc_system_clk)
     );
 
     sitcp_wrap #(
@@ -163,7 +164,7 @@ module daq_main #(
         .TCP_PORT    (TCP_PORT),
         .RBCP_PORT   (RBCP_PORT),
         .PHY_ADDRESS (PHY_ADDRESS)
-    ) (
+    ) sitcp_inst (
         // System ports
         .clk_200mhz  (ref_clk_200mhz),
         .sys_rst     (reset),
@@ -195,8 +196,8 @@ module daq_main #(
     lcd_wrap lcd_inst (
         .clk_50mhz(clk_50mhz),
         .rst(reset),
-        .lcd_ctrl_3bits(lcd[3:0]),
-        .lcd_data_4bits(lcd[7:4])
+        .lcd_ctrl_3bits(lcd[2:0]),
+        .lcd_data_4bits(lcd[6:3])
     );
 
     deepfifo_wrap deepfifo (

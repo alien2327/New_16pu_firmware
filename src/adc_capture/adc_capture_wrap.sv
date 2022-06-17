@@ -29,22 +29,35 @@ module adc_capture_wrap #(
     logic [S-1:0][3:0] bcount;
 
     // Buf assignment for clock ports
-    clock_buf ref_clk_buf (
+    logic ref_clk_ibuf;
+    IBUF clk_ibuf_inst (
         .I (ref_clk),
+        .O (ref_clk_ibuf)
+    );
+    BUFG clk_bufg_inst (
+        .I (ref_clk_ibuf),
         .O (ref_clk_buf)
     );
-    generate
-        for (genvar i = 0; i < S; i = i + 1) begin: data_clk_buf
-            clock_buf data_clk_p_buf (
-                .I (data_clk_in_p[i/4]),
-                .O (data_clk_p_buf[i])
-            );
-            clock_buf data_clk_n_buf (
-                .I (data_clk_in_n[i/4]),
-                .O (data_clk_n_buf[i])
-            );
-        end
-    endgenerate
+
+    initial begin
+        assign data_clk_p_buf = 8'b1111_1111;
+        assign data_clk_n_buf = 8'b0000_0000;
+    end
+
+    always_ff @( data_clk_in_p[0] ) begin : blockName
+        
+    end
+
+    // generate
+    //     for (genvar i = 0; i < S; i = i + 1) begin: data_clk_buf
+    //         IBUFDS_DIFF_OUT ibuf_diff_inst (
+    //             .I  (data_clk_in_p[i/4]),
+    //             .IB (data_clk_in_n[i/4]),
+    //             .O  (data_clk_p_buf[i]),
+    //             .OB (data_clk_n_buf[i])
+    //         );
+    //     end
+    // endgenerate
 
     // Instantiate input delay control block
     IDELAYCTRL icontrol (              				

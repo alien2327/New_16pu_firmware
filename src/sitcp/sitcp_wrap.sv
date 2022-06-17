@@ -33,13 +33,6 @@ interface iic_if;
     logic       rvl;
 endinterface // iic_if
 
-interface eeprom_if;
-    logic CS; // AT93C46 Chip select
-    logic CK; // AT93C46 Serial data clock
-    logic DI; // AT93C46 Serial write data (Master to Memory)
-    logic DO; // AT93C46 Serial read data (Slave to Master)
-endinterface // eeprom_if
-
 module sitcp_wrap #(
     parameter IP_ADDRESS  = 32'd0,
     parameter TCP_PORT    = 16'd0,
@@ -60,15 +53,15 @@ module sitcp_wrap #(
     // Management interface
     output logic gmii_mdc,
     output logic gmii_mdio_out,
-    input  logic gmii_mdio_in,
+    inout  logic gmii_mdio_in,
     // connect EEPROM
-    input  logic i2c_sda,
+    inout  logic i2c_sda,
     output logic i2c_scl,
     // DAQ commands
-    input logic [ 7:0] data_packet,
-    inout logic [31:0] data_number,
-    inout logic [ 7:0] channel_ctrl,
-    inout logic        trigger_cmd,
+    input  logic [ 7:0] data_packet,
+    output logic [31:0] data_number,
+    output logic [ 7:0] channel_ctrl,
+    output logic        trigger_cmd,
     // GPIO
     input  logic [7:0] dip,
     output logic [7:0] led
@@ -91,11 +84,15 @@ module sitcp_wrap #(
 
     logic        gmii_mdio_oe;
 
-    eeprom_if    eeprom;
-    rbcp_if      rbcp;
-    gmii_if      gmii;
-    tcp_if       tcp;
-    iic_if       iic;
+    logic        eeprom_CS;
+    logic        eeprom_SK;
+    logic        eeprom_DI;
+    logic        eeprom_DO;
+
+    rbcp_if      rbcp();
+    gmii_if      gmii();
+    tcp_if       tcp();
+    iic_if       iic();
 
     clock_buf ref_clk_buf (
         .I (clk_200mhz),
@@ -122,10 +119,10 @@ module sitcp_wrap #(
         .CLK_IN				(clk_200mhz_buf),			// System Clock
         .RESET_IN			(~sys_rst),				    // Reset
         .IIC_INIT_OUT		(sitcp_rst),				// IIC , AT93C46 Initialize (0=Initialize End)
-        .EEPROM_CS_IN		(eeprom.CS),				// AT93C46 Chip select
-        .EEPROM_SK_IN		(eeprom.SK),				// AT93C46 Serial data clock
-        .EEPROM_DI_IN		(eeprom.DI),				// AT93C46 Serial write data (Master to Memory)
-        .EEPROM_DO_OUT		(eeprom.DO),				// AT93C46 Serial read data(Slave to Master)
+        .EEPROM_CS_IN		(eeprom_CS),				// AT93C46 Chip select
+        .EEPROM_SK_IN		(eeprom_SK),				// AT93C46 Serial data clock
+        .EEPROM_DI_IN		(eeprom_DI),				// AT93C46 Serial write data (Master to Memory)
+        .EEPROM_DO_OUT		(eeprom_DO),				// AT93C46 Serial read data(Slave to Master)
         .INIT_ERR_OUT		(),							// PCA9548 Initialize Error
         .IIC_REQ_IN			(iic.req),					// IIC Request
         .IIC_NUM_IN			(8'd0),						// IIC Number of Access[7:0]	0x00:1Byte , 0xff:256Byte
@@ -160,10 +157,10 @@ module sitcp_wrap #(
 		.EXT_RBCP_PORT		(RBCP_PORT      	),	// in	: RBCP port #[15:0]
 		.PHY_ADDR			(PHY_ADDRESS    	),	// in	: PHY-device MIF address[4:0]
 	// EEPROM
-		.EEPROM_CS			(eeprom.CS			),	// out	: Chip select
-		.EEPROM_SK			(eeprom.SK			),	// out	: Serial data clock
-		.EEPROM_DI			(eeprom.DI			),	// out	: Serial write data
-		.EEPROM_DO			(eeprom.DO			),	// in	: Serial read data
+		.EEPROM_CS			(eeprom_CS			),	// out	: Chip select
+		.EEPROM_SK			(eeprom_SK			),	// out	: Serial data clock
+		.EEPROM_DI			(eeprom_DI			),	// out	: Serial write data
+		.EEPROM_DO			(eeprom_DO			),	// in	: Serial read data
 		// user data, intialial values are stored in the EEPROM, 0xFFFF_FC3C-3F
 		.USR_REG_X3C		(					),	// out	: Stored at 0xFFFF_FF3C
 		.USR_REG_X3D		(					),	// out	: Stored at 0xFFFF_FF3D
@@ -190,7 +187,7 @@ module sitcp_wrap #(
 		.GMII_MDIO_OUT		(gmii_mdio_out		),	// out	: Data
 		.GMII_MDIO_OE		(gmii_mdio_oe		),	// out	: MDIO output enable
 	// User I/F
-		.SiTCP_RST			(sitcp_rst			),	// out	: Reset for SiTCP and related circuits
+		.SiTCP_RST			(       			),	// out	: Reset for SiTCP and related circuits
 		// TCP connection control
 		.TCP_OPEN_REQ		(1'b0				),	// in	: Reserved input, shoud be 0
 		.TCP_OPEN_ACK		(tcp.open_ack		),	// out	: Acknowledge for open (=Socket busy)
@@ -254,7 +251,12 @@ module sitcp_wrap #(
         .data_number  (data_number   ),
         .channel_ctrl (channel_ctrl  ),
         .trigger_cmd  (trigger_cmd   ),
-        .rbcp_in      (rbcp          )
+        .we           (rbcp.we       ),
+        .re           (rbcp.re       ),
+        .wd           (rbcp.wd       ),
+        .addr         (rbcp.addr     ),
+        .rd           (rbcp.rd       ),
+        .ack          (rbcp.ack      )
     );
 
 endmodule // sitcp_wrap
